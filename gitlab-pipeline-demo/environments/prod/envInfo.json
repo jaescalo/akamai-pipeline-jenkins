@@ -1,0 +1,67 @@
+{
+    "name": "prod",
+    "propertyName": "prod.gitlab-pipeline-demo",
+    "groupId": 71960,
+    "isSecure": false,
+    "propertyId": 735578,
+    "latestVersionInfo": {
+        "propertyVersion": 1,
+        "updatedByUser": "jaescalo",
+        "updatedDate": "2021-08-25T21:36:35Z",
+        "productionStatus": "INACTIVE",
+        "stagingStatus": "INACTIVE",
+        "productId": "prd_Fresca",
+        "ruleFormat": "v2018-09-12"
+    },
+    "suggestedRuleFormat": "v2018-09-12",
+    "environmentHash": "204fa9aa5cab5be0f0e5a4d1b58ac99f16b39da8a1bc28390f9c8e1e358884d0",
+    "ruleTreeHash": "0c8b18e7bbfa35ac7b1e255e3efcb17a762f56347a8dd548f71e023e7e7ac229",
+    "lastSavedHash": "204fa9aa5cab5be0f0e5a4d1b58ac99f16b39da8a1bc28390f9c8e1e358884d0",
+    "lastValidatedHash": "204fa9aa5cab5be0f0e5a4d1b58ac99f16b39da8a1bc28390f9c8e1e358884d0",
+    "lastSaveWarnings": [
+        {
+            "type": "https://problems.luna.akamaiapis.net/papi/v0/validation/validation_message.ssl_delegate_warning_rotate",
+            "errorLocation": {
+                "template": "templates/main.json",
+                "variables": [],
+                "location": "rules/behaviors/0",
+                "value": {
+                    "name": "origin",
+                    "options": {
+                        "cacheKeyHostname": "ORIGIN_HOSTNAME",
+                        "compress": true,
+                        "enableTrueClientIp": false,
+                        "forwardHostHeader": "REQUEST_HOST_HEADER",
+                        "hostname": "jaescalo.github.io",
+                        "httpPort": 80,
+                        "httpsPort": 443,
+                        "originSni": true,
+                        "originType": "CUSTOMER",
+                        "useUniqueCacheKey": false,
+                        "verificationMode": "PLATFORM_SETTINGS"
+                    }
+                }
+            },
+            "detail": "If your `Origin Server` uses HTTPS, make sure to follow <a href=\"/dl/property-manager/property-manager-help/csh_lookup.html?id=PM_0034\" target=\"_blank\">this procedure</a> to avoid a service outage or a security breach when you rotate your origin's certificate."
+        },
+        {
+            "type": "https://problems.luna.akamaiapis.net/papi/v0/validation/generic_behavior_issue.rum_eol",
+            "errorLocation": {
+                "template": "templates/main.json",
+                "variables": [],
+                "location": "rules/behaviors/3",
+                "value": {
+                    "name": "realUserMonitoring",
+                    "options": {
+                        "enabled": true
+                    }
+                }
+            },
+            "detail": "<strong> Important </strong>: We recommend using an mPulse behavior instead on this property. mPulse is Akamai's recommended source of RUM data going forward"
+        }
+    ],
+    "lastSaveErrors": [],
+    "lastSaveHostnameErrors": [],
+    "lastSaveHostnameWarnings": [],
+    "lastSavedHostnamesHash": "f68ded2e8a0c8d6fa7e78e1da253074a8a009c930ec8075b3e2354d19f36a752"
+}

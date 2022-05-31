@@ -1,0 +1,53 @@
+{
+    "rules": {
+        "name": "default",
+        "children": [
+            "#include:performance.json",
+            "#include:Offload.json"
+        ],
+        "behaviors": [
+            {
+                "name": "origin",
+                "options": {
+                    "originType": "NET_STORAGE",
+                    "netStorage": {
+                        "downloadDomainName": "gsstrip.download.akamai.com",
+                        "cpCode": 405092,
+                        "g2oToken": "405092=6G96eY0RZK5O3Eb2xYVFzfzt8Pn8fZ37Cnv93266KVNB1U6VF1"
+                    }
+                }
+            },
+            {
+                "name": "baseDirectory",
+                "options": {
+                    "value": "/jaescalo/static-sites/"
+                }
+            },
+            {
+                "name": "cpCode",
+                "options": {
+                    "value": {
+                        "id": "${env.cpCode}"
+                    }
+                }
+            },
+            {
+                "name": "allowPost",
+                "options": {
+                    "allowWithoutContentLength": false,
+                    "enabled": true
+                }
+            },
+            {
+                "name": "realUserMonitoring",
+                "options": {
+                    "enabled": true
+                }
+            }
+        ],
+        "options": {
+            "is_secure": false
+        },
+        "comments": "The behaviors in the Default Rule apply to all requests for the property hostname(s) unless another rule overrides the Default Rule settings."
+    }
+}
