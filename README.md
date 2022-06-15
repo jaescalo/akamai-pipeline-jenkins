@@ -13,7 +13,7 @@ After the rule tree is built it will be pushed to Akamai and activated using the
 - [Akamai Property Manager CLI](https://github.com/akamai/cli-property-manager)
 - Go through the [Akamai Pipeline Runbook](https://developer.akamai.com/resource/whitepaper/akamai-pipeline-cli-framework-runbook/direct)
 
-There are two main subjects: Property Preparation for Akamai as Code and GitLab CI/CD Configuration.
+There are two main subjects: Property Preparation for Akamai as Code and Jenkins Pipeline Configuration.
 
 ## Prepare Properties for Akamai as Code
 Perhaps the most important step is to prepare the target properties for management via the pipeline framework.
@@ -52,26 +52,42 @@ $ akamai pipeline new-pipeline -p gitlab-pipeline-demo -e <propertyId> prod -g <
 ```
 6. Because for an existing property it is rare to add/remove hostname the `hostnames.json` files can be deleted. These are located inside each environment folder.
 7. Add any pipeline variables as needed through the JSON variables files to parameterize the different environments.
-8. Build the rule tree file by submiting the merge command.
+8. Build the rule tree files for each environment by submiting the merge command.
 ```
 $ akamai pipeline merge  -n -v -p gitlab-pipeline-demo dev
+$ akamai pipeline merge  -n -v -p gitlab-pipeline-demo prod
 ```
-Our file repository is set up! These can be uploaded to GitLab now and managed with CI/CD.
+Our file repository is set up! These can be uploaded to the repository now and managed with CI/CD.
 
-## Akamai CI/CD Setup in GitLab
-This is a simple example that leverages the akamai/shell Docker container to build the .edgerc file in one job and execute the pipeline cli in another job. Check the `.gitlab-ci.yml` for more clarification on the following steps (the `--accountSwitchKey` flag can be disregarded as it is only for managing multiple accounts with one API client). In summary:
+## Akamai Pipeline Setup in Jenkins
+This is a simple example that leverages the akamai/shell Docker container to execute the pipeline. 
 
-1. Store The Akamai {OPEN} API credentials in the project variables in GitLab to keep them masked.
-2. A developer makes changes to JSON code and commits is to the repository. Git branching and collaboration concepts apply here.
-4. Akamai CLI builds the rule file from the json snippets and variables
+There are two `Jenkinsfile` in this repository:
+1. `./Jenkinsfile` is the main Jenkins pipeline definition.
+2. `./tests-pipeline-jenkins/Jenkinsfile` is the test pipeline which is triggered from the main pipeline and uses Newman to run the website tests.
+3. For simplicity variables are created which will reference to the pipeline name and environment. For example:
 ```
-$ akamai pipeline merge  -n -v -p gitlab-pipeline-demo dev
+environment {
+    EDGERC_FILE = credentials('AKAMAI_EDGERC')
+    ACCOUNTKEY = '1-6JHGX'
+    PIPELINE_NAME = 'gitlab-pipeline-demo'
+    ENVIRONMENT = 'prod'
+}
 ```
-5. Akamai CLI creates a new version of the property and updates it with the local rule tree file
+4. Store The Akamai {OPEN} API credentials in Jenkins Credentials. For this scenario the credentials were stored under the name `AKAMAI_EDGERC`.
+5. The ACCOUNTKEY variables is used for the `--accountSwitchKey` flag which can be disregarded as it is only for managing multiple accounts with one API client. 
+
+### The flow
+1. A developer makes changes to JSON code and commits is to the repository. Git branching and collaboration concepts apply here.
+2. Akamai CLI builds the rule file from the json snippets and variables
 ```
-$ akamai property-manager property-update -p <property-name> --file ./gitlab-pipeline-demo/dist/dev.gitlab-pipeline-demo message "Created By GitLab-$CI_JOB_NAME-$CI_JOB_ID; Commit $CI_COMMIT_REF_NAME"
+$ akamai pipeline merge  -n -v -p <pipeline-name> <environment>
 ```
-6. Akamai CLI activates the property
+3. Akamai CLI creates a new version of the property and updates it with the local rule tree file
+```
+$ akamai property-manager property-update -p <property-name> --file ./gitlab-pipeline-demo/dist/dev.gitlab-pipeline-demo message "Created By Jenkins-$JOB_BASE_NAME:$BUILD_NUMBER; Commit $COMMIT_MESSAGE"
+```
+4. Akamai CLI activates the property
 ```
 $ akamai property-manager activate-version -p <property-name> --network staging --wait-for-activate
 ```
