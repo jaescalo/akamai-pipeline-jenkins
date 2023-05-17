@@ -1,0 +1,7 @@
+{
+    "environments": [
+        "qa",
+        "prod"
+    ],
+    "name": "demo.pipeline"
+}

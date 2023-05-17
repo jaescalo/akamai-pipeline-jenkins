@@ -1,9 +1,0 @@
-[
-    {
-        "cnameType": "EDGE_HOSTNAME",
-        "edgeHostnameId": 4874468,
-        "cnameFrom": "prod-jaescalo.test.edgekey-staging.net",
-        "cnameTo": "jaescalo.test.edgekey.net",
-        "certProvisioningType": "CPS_MANAGED"
-    }
-]

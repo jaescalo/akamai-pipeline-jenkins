@@ -3,16 +3,14 @@ pipeline {
         docker { image 'akamai/shell' }
     }
     environment {
-        EDGERC_FILE = credentials('AKAMAI_EDGERC')
-        ACCOUNTKEY = '1-6JHGX'
-        PIPELINE_NAME = 'gitlab-pipeline-demo'
-        ENVIRONMENT = 'prod'
+        EDGERC_FILE = credentials('AKAMAI_EDGERC_FILE')
+        PIPELINE_NAME = 'demo.pipeline'
     }
     stages {
         stage('Checkout main branch') {
             steps {
               checkout([$class: 'GitSCM', 
-                branches: [[name: '*/main']],
+                branches: [[name: '*/simplified']],
                 doGenerateSubmoduleConfigurations: false,
                 extensions: [[$class: 'CleanCheckout']],
                 submoduleCfg: [], 
@@ -25,28 +23,20 @@ pipeline {
         
         stage('Build Rule Tree') {
             steps {
-                sh 'akamai pipeline merge  -n -v -p $PIPELINE_NAME $ENVIRONMENT --edgerc $EDGERC_FILE --accountSwitchKey $ACCOUNTKEY'
+                sh 'akamai pipeline merge --no-validate --verbose --pipeline . $ENVIRONMENT --edgerc $EDGERC_FILE'
             }
         }
 
         stage('Update Property') {
             steps {
                 echo "$COMMIT_MESSAGE"
-                sh 'akamai property-manager property-update -p $ENVIRONMENT.$PIPELINE_NAME --file ./$PIPELINE_NAME/dist/$ENVIRONMENT.$PIPELINE_NAME.papi.json --message "Created By Jenkins-$JOB_BASE_NAME:$BUILD_NUMBER; Commit $COMMIT_MESSAGE" --edgerc $EDGERC_FILE --accountSwitchKey $ACCOUNTKEY'
+                sh 'akamai property-manager property-update --property $ENVIRONMENT.$PIPELINE_NAME --file ./dist/$ENVIRONMENT...papi.json --message "Created By Jenkins-$JOB_BASE_NAME:$BUILD_NUMBER; Commit $COMMIT_MESSAGE" --edgerc $EDGERC_FILE'
             }
         }
 
         stage('Activation') {
             steps {
-                sh 'akamai property-manager activate-version -p $ENVIRONMENT.$PIPELINE_NAME --network staging --wait-for-activate --edgerc $EDGERC_FILE --accountSwitchKey $ACCOUNTKEY'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                build job: 'Newman-Test-Stage', propagate: true, wait: true, parameters: [
-                  string(name: 'ENVIRONMENT', value: env.ENVIRONMENT)
-                ]
+                sh 'akamai property-manager activate-version --property $ENVIRONMENT.$PIPELINE_NAME --network staging --wait-for-activate --edgerc $EDGERC_FILE'
             }
         }
     }
